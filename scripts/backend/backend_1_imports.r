@@ -45,10 +45,10 @@
   # Get list of data frames in the specified environment
   dflist = Filter(function(x) is (x, "data.frame"),
                   mget(ls(e),envir= e))
-  
+  # print(dflist)
   # Filter out data frames without the specified keyword
   dflist = dflist[grepl(keyword,ls(dflist))]
-  
+  # print(dflist)
   # Return filtered list of data frames
   return (dflist)
 }
@@ -57,7 +57,16 @@
 #  The dataframes are then grouped according to _Data and _Antigen keywords in the file naming convention (filterclean function)
   import <- function(dataset){
     ## Import all libraries needed for downstream
-    pkg_list = c("gridExtra", "ggplot2", "ggfortify", "MASS", "BiocManager::lumi", "officer")
+    pkg_list = c("gridExtra", 
+                 "ggplot2", 
+                 "ggfortify", 
+                 "MASS", 
+                 "BiocManager::lumi",
+                 "BiocManager::limma", 
+                 "readxl", 
+                 "dplyr",
+                 "broom",
+                 "qvalue")
     load_dependencies(pkg_list)
     # set path to sample data directory
     sample_data=paste(getwd(),"/sample_data/", sep="")
