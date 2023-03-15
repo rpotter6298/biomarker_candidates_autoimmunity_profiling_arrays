@@ -117,7 +117,6 @@ compress_duplicates <- function(set, layout){
 # If mode=1, the column names are set to the Antigen name 
 # If mode=2, the column names are set to the Gene name. 
 # The function then returns a list of data frames with updated column names.
-
 set_colname_adapter <- function (dflist, antigens = I00_Antigens, mode=1, controls=get("controls", globalenv())){
   lapply(1:length(dflist), function(setid){
     set = dflist[[setid]]
@@ -135,7 +134,7 @@ set_colname_adapter <- function (dflist, antigens = I00_Antigens, mode=1, contro
 } 
 
 
-### Flow
+### Automatic Processing
 stage_1 <- function(dflist, name){
   T01 = handle_background(dflist)
   T02 = lapply(T01,emptyadjust)

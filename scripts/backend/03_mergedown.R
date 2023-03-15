@@ -31,6 +31,7 @@ mergedown <- function (dflist){
   return(outputdf)
 }
 
+#Automatic Processing
 stage_2 <- function(dflist, name){
   set3 <- mergedown(dflist)
   dflist <- c(dflist, list(set3))

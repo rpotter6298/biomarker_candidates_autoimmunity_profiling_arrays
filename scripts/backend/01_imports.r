@@ -1,4 +1,25 @@
-
+#Takes a list of package names and automates the process of checking, installing, and loading them. 
+#Handles both CRAN and Bioconductor packages, ensuring that the necessary packages are available in the user's R environment.
+load_dependencies <- function(pkg_list) {
+  # Load or install packages from list
+  for (pkg in pkg_list) {
+    if (substr(pkg, 1, 11) == "BiocManager") {
+      pkg = substr(pkg, 14, nchar(pkg))
+      if (!requireNamespace("BiocManager", quietly = TRUE)) {
+        install.packages("BiocManager")
+      }
+      if (!require(pkg, character.only = TRUE)) {
+        BiocManager::install(substr(pkg, 14, nchar(pkg)))
+      }
+    }
+    else{
+      if (!require(pkg, character.only = TRUE)) {
+        install.packages(pkg)
+      }
+    }
+    library(pkg, character.only = TRUE)
+  }
+}
 # This function checks the integrity of a set of dataset files in a specified directory, filtering them by keyword, 
 # and ensures that each Data Intensity file has a corresponding Antigen List file. 
 # If any files are found to be missing an Antigen List, the function returns a list of these files, otherwise it returns TRUE.
@@ -36,7 +57,6 @@
       return(missing_antigen_list_files)
     }
   }
-  
 # Function to filter out data frames with a given keyword in their name
 # keyword: the keyword to search for in the data frame names
 # e: the environment to search in (default is parent frame)
@@ -52,7 +72,6 @@
   # Return filtered list of data frames
   return (dflist)
 }
-
 ## This import function first brings all excel documents in the sample_data directory which include the dataset string and imports them as dataframes
 #  The dataframes are then grouped according to _Data and _Antigen keywords in the file naming convention (filterclean function)
   import <- function(dataset){
@@ -66,7 +85,8 @@
                  "readxl", 
                  "dplyr",
                  "broom",
-                 "qvalue")
+                 "qvalue",
+                 "openxlsx")
     load_dependencies(pkg_list)
     # set path to sample data directory
     sample_data=paste(getwd(),"/sample_data/", sep="")

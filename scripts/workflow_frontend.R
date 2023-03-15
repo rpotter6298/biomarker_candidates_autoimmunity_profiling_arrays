@@ -22,3 +22,4 @@ pp_heatmap(P03_Transformed$Set_3, "compstat")
 lim = limma_subset(P03_Transformed$Set_3)
 pp_heatmap(lim)
 str(data)
+
