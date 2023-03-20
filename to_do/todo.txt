@@ -1,0 +1,26 @@
+Hi Ryan
+
+I suggest that you start to put together a first draft of the manuscript. I have attached your thesis, but this is not the final version (I only have the final version as a PDF so start from your final version and work with my comments from this word doc).
+
+For our meeting on Friday, put together a ppt with figures/tables that you like to show in the manuscript. My suggestion is:
+
+1.	PCA plot based on all analytes (except the once that were removed due to too low intensity in all individuals). If there are outliers that destroys the plot, remove those and state which samples you have removed in the text below the figure.
+2.	Table with significant antigens (genes), Analyte ID, Gene name, p-value, q-value Log2FC (top 15?)
+3.	Cluster heatmap
+4.	ROC curve
+5.	GSEA
+6.	Correlation analysis – check correlation (Spearman) between all analytes and present the top 10 pairs that show the strongest positive correlation. 
+
+Also, do not forget to apply for the courses included in your ISP.
+
+//Andreas
+
+
+
+NOTES:
+  Fold Change - It is weird. Transforming the data with mad, bc, rsn, etc, will result in FC values that do not reflect the biological reality.
+                Also, Limma does not compute a simple ratio of the means for its estimation of logfc, 
+                but rather fits a linear model to the data and then applies eBayes moderation, then estimates the logFC.
+                If we want the most accurate biological picture, perhaps it is best to derive FC values from before transformation, and with conventional calculation
+                SEE CHECKPLOTS FOR VISUAL EXPLANATION
+                

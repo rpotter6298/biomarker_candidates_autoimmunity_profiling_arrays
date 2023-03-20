@@ -70,15 +70,22 @@ differential_reports <- function(dflist){
   }
   return(output)
 }
-limma_subset <- function(df){
+limma_subset <- function(df, mode = "default", n=15){
   lim <- limma_funct(df)
-  lim_sigs <- row.names(lim[lim$P.Val<0.05,])
-  lim_data <- cbind(df[1:2],df[lim_sigs])
+  
+  if (mode == "default"){
+    lim_sigs <- row.names(lim[lim$P.Value<0.05,])
+    lim_data <- cbind(df[1:2],df[lim_sigs])
+  }
+  else if (mode == "top"){
+    lim_sigs <- lim %>% arrange(adj.P.Val) %>% head(n) %>% row.names
+    lim_data <- cbind(df[1:2], df[lim_sigs])
+  }
   return(lim_data)
 }
 compstat_subset <- function(df){
   comp <- comparative_statistics(df)
-  comp_sigs <- row.names(comp[comp$Pval<0.05,])
+  comp_sigs <- row.names(comp[comp$P.Value<0.05,])
   comp_data <- cbind(df[1:2],df[comp_sigs])
   return(comp_data)
 }
@@ -143,6 +150,7 @@ transformer_rsn <- function(df){
   }
   return(cbind(df[1:2],rsn_transform))
 }
+
 
 
 ##Automatic Processing

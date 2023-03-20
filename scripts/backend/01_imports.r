@@ -9,7 +9,7 @@ load_dependencies <- function(pkg_list) {
         install.packages("BiocManager")
       }
       if (!require(pkg, character.only = TRUE)) {
-        BiocManager::install(substr(pkg, 14, nchar(pkg)))
+        BiocManager::install(pkg)
       }
     }
     else{
@@ -86,7 +86,13 @@ load_dependencies <- function(pkg_list) {
                  "dplyr",
                  "broom",
                  "qvalue",
-                 "openxlsx")
+                 "openxlsx",
+                 "tibble",
+                 "pheatmap",
+                 "pROC",
+                 "tidyverse",
+                 "msigdbr",
+                 "BiocManager::clusterProfiler")
     load_dependencies(pkg_list)
     # set path to sample data directory
     sample_data=paste(getwd(),"/sample_data/", sep="")

@@ -47,27 +47,28 @@ pp_box_plot_multi <- function(data, name){
   }
 }
 
-pp_heatmap <- function(df, subset = "full"){
+pp_heatmap <- function(df, subset = "full", show_row_names = TRUE, show_col_names = TRUE){
+  # Apply the appropriate subset function based on the 'subset' parameter
   if(subset == "limma"){
     df = limma_subset(df)
   } else if(subset == "compstat"){
     df = compstat_subset(df)
   }
+  # Remove the first two columns to create the 'subset' dataframe
   subset = df[-1:-2]
-  subset = apply(subset,2, function(x) (x - mean(x))/sd(x))
-  rownames(subset) = paste0(df$group,"-",df$Internal.LIMS.ID)
-  # subset = as.matrix(comp_data[comp_data$Internal.LIMS.ID!="GLA_02-0016",])
-  subset = subset[,order(colMeans(subset), decreasing = TRUE)]
-  # subset2 = subset[,-1]
-  # subset = log2(subset)
-  subset=t(subset)
-  # subset = scale(subset)
-  # subset2 = t(subset2)
-  pheatmap(subset, scale = "none", cluster_rows = FALSE, cluster_cols = TRUE)
+  # Standardize the columns of the 'subset' dataframe
+  subset = apply(subset, 2, function(x) (x - mean(x)) / sd(x))
+  # Create row names for the 'subset' dataframe based on the 'group' and 'Internal.LIMS.ID' columns
+  rownames(subset) = paste0(df$group, "-", df$Internal.LIMS.ID)
+  # Order the columns of the 'subset' dataframe by decreasing column means
+  subset = subset[, order(colMeans(subset), decreasing = TRUE)]
+  # Transpose the 'subset' dataframe
+  subset = t(subset)
+  # # Create empty annotations for rows and columns if labels should be hidden
+  # annotation_row <- if (!show_row_labels) data.frame(labels = factor(rep("", nrow(subset))), stringsAsFactors = FALSE) else NULL
+  # annotation_col <- if (!show_col_labels) data.frame(labels = factor(rep("", ncol(subset))), stringsAsFactors = FALSE) else NULL
   
-  # pheatmap(subset, scale = "column", cluster_rows=FALSE, cluster_cols=TRUE, show_colnames = TRUE)
-  # pheatmap(subset, scale = "row", cluster_cols = TRUE, cluster_rows=FALSE, show_colnames = TRUE)
-  # pheatmap(subset, scale = "none", show_colnames = TRUE)
+  pheatmap(subset, scale = "none", cluster_rows = FALSE, cluster_cols = TRUE, show_rownames = show_row_names, show_colnames = show_col_names)
 }
 
 pp_multipca <- function(df, name){
@@ -80,4 +81,27 @@ pp_multipca <- function(df, name){
   ggsave(paste(name, "multipca.png", sep="_"), combined_plot, width = 12, height = 4, dpi = 300)
   }
 
-
+# plot_roc_curve_logistic <- function(df) {
+#   df = df[-1]
+#   df$group=as.numeric(df$group)
+#   # Fit logistic regression model
+#   logistic_model <- glm(group ~ ., data = df, family = "binomial")
+#   
+#   # Calculate predicted probabilities for each sample
+#   predicted_probabilities <- predict(logistic_model, type = "response")
+#   
+#   # Generate the response vector
+#   # response <- ifelse(df$group == "case", 1, 0)
+#   response <- df$group
+#   # Calculate the ROC curve
+#   roc_obj <- roc(response, predicted_probabilities)
+#   
+#   # Plot the ROC curve
+#   plot(roc_obj, main = "ROC Curve", xlab = "False Positive Rate", ylab = "True Positive Rate",
+#        col = "#1c61b6", lwd = 3)
+#   
+#   # Add AUC value to the plot
+#   auc_text <- paste0("AUC: ", round(auc(roc_obj), 3))
+#   legend("bottomright", legend = auc_text, bty = "n", cex = 1.2)
+# }
+  
