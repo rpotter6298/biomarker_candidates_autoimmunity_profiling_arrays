@@ -3,3 +3,6 @@
 .RData
 .Ruserdata
 .cred/
+plots/
+sample_data/
+stats/

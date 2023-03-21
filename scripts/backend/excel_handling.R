@@ -71,9 +71,10 @@ full_analyte_info <- function(df, antigens=I00_Antigens){
   
   if (proportion_matches < 0.5) {
     warning("Most RowName values are not found in Antigen.name")
-  } else {
-    message("Most RowName values are found in Antigen.name")
   }
+  # else {
+  #   message("Most RowName values are found in Antigen.name")
+  # }
   # Merge the main dataframe with the lookup dataframe based on the Antigen.name column
   result_df <- main_df %>%
     left_join(lookup_df, by = c("RowName" = "Antigen.name"))
@@ -96,3 +97,16 @@ excel_export <- function(dflist, name = deparse(substitute(dflist))) {
   # Save the workbook
   saveWorkbook(wb, file = file_path, overwrite = TRUE)
 }
+
+replace_antigen_names<- function(vector, antigens=I00_Antigens, replacement_col = "Gene.name"){
+  lookup_df <- bind_rows(antigens)[-1]
+  # Remove duplicates from lookup_df based on Antigen.name
+  lookup_df <- lookup_df %>%
+    distinct(Antigen.name, .keep_all = TRUE)
+  
+  # Create a lookup dictionary with Antigen.name as the key and the specified column as the value
+  lookup_dict <- setNames(lookup_df[[replacement_col]], lookup_df$Antigen.name)
+  replaced_vector <- lookup_dict[vector]
+  return(replaced_vector)
+}
+  

@@ -70,11 +70,11 @@ differential_reports <- function(dflist){
   }
   return(output)
 }
-limma_subset <- function(df, mode = "default", n=15){
+limma_subset <- function(df, mode = "default", n=15, P=0.05){
   lim <- limma_funct(df)
   
   if (mode == "default"){
-    lim_sigs <- row.names(lim[lim$P.Value<0.05,])
+    lim_sigs <- row.names(lim[lim$adj.P.Val<P,])
     lim_data <- cbind(df[1:2],df[lim_sigs])
   }
   else if (mode == "top"){
@@ -85,7 +85,7 @@ limma_subset <- function(df, mode = "default", n=15){
 }
 compstat_subset <- function(df){
   comp <- comparative_statistics(df)
-  comp_sigs <- row.names(comp[comp$P.Value<0.05,])
+  comp_sigs <- row.names(comp[comp$Q.Value<0.05,])
   comp_data <- cbind(df[1:2],df[comp_sigs])
   return(comp_data)
 }

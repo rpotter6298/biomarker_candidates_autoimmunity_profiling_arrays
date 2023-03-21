@@ -10,12 +10,31 @@ pp_dflist_wrapper <- function(dflist, pp_function){
   }
 }
 
-pca_plot <- function(data){
+pca_plot <- function(data, show_ellipse = TRUE) {
+  library(ggplot2)
+  library(ggfortify)
+  
   data$group <- factor(data$group)
   pca_data <- prcomp(data[-1:-2], center = TRUE, scale = TRUE)
-  plot <- autoplot(pca_data, data=data, colour = "group")
+  
+  # Extract PCA scores
+  pca_scores <- as.data.frame(pca_data$x)
+  pca_scores$group <- data$group
+  
+  plot <- ggplot(pca_scores, aes(x = PC1, y = PC2, color = group)) +
+    geom_point() +
+    theme_classic() +
+    labs(x = "PC1", y = "PC2", title = "PCA Plot")
+  
+  if (show_ellipse) {
+    plot <- plot + stat_ellipse(aes(fill = group), geom = "polygon", level = 0.95, alpha = 0.2) +
+      labs(title = "PCA Plot with 95% Confidence Ellipses")
+  }
+  
   return(plot)
 }
+
+
 
 pp_box_plot_multi <- function(data, name){
   # Set up plot area and device
@@ -81,27 +100,5 @@ pp_multipca <- function(df, name){
   ggsave(paste(name, "multipca.png", sep="_"), combined_plot, width = 12, height = 4, dpi = 300)
   }
 
-# plot_roc_curve_logistic <- function(df) {
-#   df = df[-1]
-#   df$group=as.numeric(df$group)
-#   # Fit logistic regression model
-#   logistic_model <- glm(group ~ ., data = df, family = "binomial")
-#   
-#   # Calculate predicted probabilities for each sample
-#   predicted_probabilities <- predict(logistic_model, type = "response")
-#   
-#   # Generate the response vector
-#   # response <- ifelse(df$group == "case", 1, 0)
-#   response <- df$group
-#   # Calculate the ROC curve
-#   roc_obj <- roc(response, predicted_probabilities)
-#   
-#   # Plot the ROC curve
-#   plot(roc_obj, main = "ROC Curve", xlab = "False Positive Rate", ylab = "True Positive Rate",
-#        col = "#1c61b6", lwd = 3)
-#   
-#   # Add AUC value to the plot
-#   auc_text <- paste0("AUC: ", round(auc(roc_obj), 3))
-#   legend("bottomright", legend = auc_text, bty = "n", cex = 1.2)
-# }
+
   
