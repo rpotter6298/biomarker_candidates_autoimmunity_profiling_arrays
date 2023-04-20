@@ -109,4 +109,10 @@ replace_antigen_names<- function(vector, antigens=I00_Antigens, replacement_col 
   replaced_vector <- lookup_dict[vector]
   return(replaced_vector)
 }
-  
+
+untransform_subset <- function(restriction_df, df, subset_method = limma_subset, ...){
+  subset <- do.call(subset_method, c(list(restriction_df), list(...)))
+  df_subset <- df[,colnames(df) %in% colnames(subset)]
+  colnames(df_subset)[-1:-2]=replace_antigen_names(colnames(df_subset[-1:-2]))
+  return(df_subset)
+}

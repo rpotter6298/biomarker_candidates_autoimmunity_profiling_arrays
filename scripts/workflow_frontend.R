@@ -4,7 +4,7 @@ for (file in list.files(file.path("scripts", "backend"))){
   print(file)
   source(file.path("scripts", "backend", file))
 }
-
+source(file.path("scripts", "importer.R"))
 
 
 ### Pipeline
@@ -12,19 +12,36 @@ import(dataset)
 stage_1(I01_Import, "P01_Preprocessed")
 stage_2(P01_Preprocessed, "P02_Merged")
 stage_3(P02_Merged, "P03_Transformed")
-#stage_05(P03_Transformed)
 
 
-# 
-export_excel(P03_Transformed)
-# pp_dflist_wrapper(X01_bg_purge, pp_box_plot_multi)
-# pp_dflist_wrapper(P03_Transformed, pp_multipca)
-# pp_heatmap(P03_Transformed$Set_3, "compstat")
+#export_excel(P03_Transformed)
+#Report with good names
+report = reports_P03_Transformed_bcrsn$Set_3_limma
+anti_names = row.names((report))
+gene_names = unname(replace_antigen_names(anti_names))
+report["Gene_Names"] = gene_names
 
 #ROC with P.Value 0.1
-rr = roc_curve(P03_Transformed$Set_3, report = reports_P03_Transformed_bcrsn$Set_3_limma ,P.Val=0.1, stepwise = TRUE)
-rr$model_summary
-rr$roc_plot
-lim=limma_subset(P03_Transformed$Set_3, P=0.1)
-colnames(lim)[-1:-2]=replace_antigen_names(colnames(lim[-1:-2]))
+fancy_roc(P03_Transformed$Set_3, report = reports_P03_Transformed_bcrsn$Set_3_limma, validation = "LOOCV")
+roc_breakdown = roc_curve(P03_Transformed$Set_3, report = reports_P03_Transformed_bcrsn$Set_3_limma, validation = "LOOCV", stepwise = TRUE)
+roc_breakdown$roc
+roc_breakdown$validation$accuracy
+roc_breakdown$validation
+#Heatmap
+lim = limma_subset(P03_Transformed$Set_3, mode="raw")
+names = replace_antigen_names(colnames(lim[-1:-2]))
+colnames(lim)[-1:-2]<- unname(names)
 pp_heatmap(lim)
+#Boxplots
+pp_box_plot_multi(lim, "Boxplots")
+
+#GSEA
+C2 = msigdb_workflow("C2")
+C3 = msigdb_workflow("C3")
+
+#OTHER
+pp_box_plot_multi(lim, "Limma_Subset")
+untrans = untransform_subset(P03_Transformed$Set_3, P02_Merged$Set_3, subset_method =limma_subset, P=0.1, mode="default")
+pp_box_plot_multi(untrans, "untrans_limma")
+
+

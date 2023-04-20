@@ -14,17 +14,23 @@ pca_plot <- function(data, show_ellipse = TRUE) {
   library(ggplot2)
   library(ggfortify)
   
-  data$group <- factor(data$group)
+  data$group <- factor(data$group, levels = c(0, 1), labels = c("Healthy", "Diseased"))
   pca_data <- prcomp(data[-1:-2], center = TRUE, scale = TRUE)
   
   # Extract PCA scores
   pca_scores <- as.data.frame(pca_data$x)
   pca_scores$group <- data$group
+  # Calculate percentage of variance explained by each PC
+  var_exp <- round(pca_data$sdev^2 / sum(pca_data$sdev^2) * 100, 2)
+  
+  # Update axis labels with percentage of variance explained
+  x_label <- paste0("PC1 (", var_exp[1], "%)")
+  y_label <- paste0("PC2 (", var_exp[2], "%)")
   
   plot <- ggplot(pca_scores, aes(x = PC1, y = PC2, color = group)) +
     geom_point() +
     theme_classic() +
-    labs(x = "PC1", y = "PC2", title = "PCA Plot")
+    labs(x = x_label, y = y_label, title = "PCA Plot")
   
   if (show_ellipse) {
     plot <- plot + stat_ellipse(aes(fill = group), geom = "polygon", level = 0.95, alpha = 0.2) +
@@ -45,7 +51,7 @@ pp_box_plot_multi <- function(data, name){
     png(filename = paste0(filename,".png"), width = 1200+300*dim[1], height = 900+100*dim[2], res=250)
     par(mfrow = c(dim[2],dim[1]))
     for (i in col_range) {
-      plot = boxplot(data[,i] ~ data$group, main = colnames(data)[i], xlab = "Group")
+      plot = boxplot(data[,i] ~ data$group, main = colnames(data)[i], xlab = "Group", ylab="")
     }
     dev.off()
   }
@@ -59,7 +65,7 @@ pp_box_plot_multi <- function(data, name){
       par(mfrow = c(dim[2],dim[1]))
       print(col_range)
       for (i in col_range) {
-        plot = boxplot(data[,i] ~ data$group, main = colnames(data)[i], xlab = "Group")
+        plot = boxplot(data[,i] ~ data$group, main = colnames(data)[i], xlab = "Group", ylab="")
       }
       dev.off()
     }
@@ -78,14 +84,11 @@ pp_heatmap <- function(df, subset = "full", show_row_names = TRUE, show_col_name
   # Standardize the columns of the 'subset' dataframe
   subset = apply(subset, 2, function(x) (x - mean(x)) / sd(x))
   # Create row names for the 'subset' dataframe based on the 'group' and 'Internal.LIMS.ID' columns
-  rownames(subset) = paste0(df$group, "-", df$Internal.LIMS.ID)
+  rownames(subset) = paste0(ifelse(df$group == 0, "Healthy", "Diseased"), "-", substr(df$Internal.LIMS.ID, start = nchar(df$Internal.LIMS.ID)-3, stop = nchar(df$Internal.LIMS.ID)))
   # Order the columns of the 'subset' dataframe by decreasing column means
   subset = subset[, order(colMeans(subset), decreasing = TRUE)]
   # Transpose the 'subset' dataframe
   subset = t(subset)
-  # # Create empty annotations for rows and columns if labels should be hidden
-  # annotation_row <- if (!show_row_labels) data.frame(labels = factor(rep("", nrow(subset))), stringsAsFactors = FALSE) else NULL
-  # annotation_col <- if (!show_col_labels) data.frame(labels = factor(rep("", ncol(subset))), stringsAsFactors = FALSE) else NULL
   
   pheatmap(subset, scale = "none", cluster_rows = FALSE, cluster_cols = TRUE, show_rownames = show_row_names, show_colnames = show_col_names)
 }
