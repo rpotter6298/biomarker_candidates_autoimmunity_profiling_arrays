@@ -9,6 +9,8 @@ gene_names = unname(replace_antigen_names(anti_names))
 report["Gene_Names"] = gene_names
 #Set 3 Pictures
 pca_plot(P03_Transformed$Set_3, show_ellipse = TRUE)
+
+
 pp_heatmap(P03_Transformed$Set_3, show_row_names=FALSE)
 lim = limma_subset(P03_Transformed$Set_3, mode="raw")
 names = replace_antigen_names(colnames(lim[-1:-2]))
@@ -28,6 +30,7 @@ analyte_names <- names(coefficients)[-1]
 unname(replace_antigen_names(analyte_names))
 
 fancy_roc(P03_Transformed$Set_3, report = reports_P03_Transformed_bcrsn$Set_3_limma, validation = "LOOCV")
+fancy_roc_2(P03_Transformed$Set_3, report = reports_P03_Transformed_bcrsn$Set_3_limma, validation = "LOOCV")
 
 
 #ROC
@@ -103,3 +106,20 @@ bar_plot <- function(set){
     xlab("Gene Name") + ylab("Adjusted Expression Level") +
     labs(fill = "Group")
 }
+
+##Playing with PCA
+PC1 = pca_data$rotation[,1]
+PC2 = pca_data$rotation[,2]
+listy = PC1[PC1>0]
+listy = PC2[PC2>0]
+barplot(unlist(listy), names.arg = names(listy), 
+        xlab = "Categories", ylab = "Values", main = "Bar Chart from Named List")
+
+
+# create a plot
+plot(1:10, 1:10, xlab = "X-axis", ylab = "Y-axis")
+
+
+# adjust the size of the y-axis labels
+par(cex.axis = 1)
+

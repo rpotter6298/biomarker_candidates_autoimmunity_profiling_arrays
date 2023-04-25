@@ -54,3 +54,42 @@ roc_curve <- function(df, report, P.Val = 0.05, stepwise = FALSE, validation = "
   
   return(results)
 }
+
+fancy_roc <- function(df, report, P.Val = 0.05, validation = "none") {
+  library(pROC)
+  lrep_sigs <- report[report$adj.P.Val < P.Val,]
+  analytes <- row.names(lrep_sigs)
+  df_selected <- df[, c("group", analytes)]
+  df_selected$group = as.numeric(df_selected$group)
+  logistic_model <- glm(group ~ ., data = df_selected, family = "binomial")
+  
+  logistic_model_stepwise <- NULL
+  auc_stepwise <- NULL
+  predicted_probabilities_stepwise <- NULL
+  if (length(analytes) > 1) {
+    logistic_model_stepwise <- step(logistic_model, direction = "backward")
+    predicted_probabilities_stepwise <- predict(logistic_model_stepwise, type = "response")
+    roc_obj_stepwise <- roc(df_selected$group, predicted_probabilities_stepwise)
+    auc_stepwise <- auc(roc_obj_stepwise)
+  }
+  
+  predicted_probabilities <- predict(logistic_model, type = "response")
+  roc_obj <- roc(df_selected$group, predicted_probabilities)
+  auc <- auc(roc_obj)
+  
+  par(cex.axis = 1.5)
+  plot(roc_obj, col="red", main = "", xlim=c(1,0), ylim=c(0,1))
+
+  if (!is.null(logistic_model_stepwise)) {
+    predicted_probabilities_stepwise <- predict(logistic_model_stepwise, type = "response")
+    roc_obj_stepwise <- roc(df_selected$group, predicted_probabilities_stepwise)
+    auc_stepwise <- auc(roc_obj_stepwise)
+    lines(roc_obj_stepwise, col="blue")
+    legend("bottomright", legend=c("Logistic Regression", "Logistic Regression (Backwards Step)"), col=c("red", "blue"), lty=1, cex=0.8)
+  }
+  else {
+    legend("bottomright", legend="Logistic Regression", col="red", lty=1, cex=0.8)
+  }
+  text(x=0.4, y=0.4, labels=paste("AUC: ", paste0(round(auc, 3))), pos=1, cex=1, col="red")
+  text(x=0.4, y=0.35, labels=paste("AUC: ", paste0(round(auc_stepwise, 3))), pos=1, cex=1, col="blue")}
+
