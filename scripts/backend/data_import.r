@@ -76,7 +76,8 @@ load_dependencies <- function(pkg_list) {
 #  The dataframes are then grouped according to _Data and _Antigen keywords in the file naming convention (filterclean function)
   import <- function(dataset){
     ## Import all libraries needed for downstream
-    pkg_list = c("gridExtra", 
+    pkg_list = c("rlang",
+                 "gridExtra", 
                  "ggplot2", 
                  "ggfortify", 
                  "MASS", 
@@ -85,7 +86,7 @@ load_dependencies <- function(pkg_list) {
                  "readxl", 
                  "dplyr",
                  "broom",
-                 "qvalue",
+                 "BiocManager::qvalue",
                  "openxlsx",
                  "tibble",
                  "pheatmap",
