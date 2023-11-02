@@ -1,8 +1,6 @@
-.Rproj.user
-.Rhistory
-.RData
-.Ruserdata
-.cred/
+archive/
 plots/
 sample_data/
 stats/
+to_do/
+.vscode/

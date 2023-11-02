@@ -77,6 +77,10 @@ limma_subset <- function(df, mode = "default", n=15, P=0.05){
     lim_sigs <- row.names(lim[lim$adj.P.Val<P,])
     lim_data <- cbind(df[1:2],df[lim_sigs])
   }
+  else if (mode == "raw"){
+    lim_sigs <- row.names(lim[lim$P.Val<P,])
+    lim_data <- cbind(df[1:2],df[lim_sigs])
+  }
   else if (mode == "top"){
     lim_sigs <- lim %>% arrange(adj.P.Val) %>% head(n) %>% row.names
     lim_data <- cbind(df[1:2], df[lim_sigs])

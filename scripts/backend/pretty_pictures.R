@@ -72,6 +72,46 @@ pp_box_plot_multi <- function(data, name){
   }
 }
 
+library(ggplot2)
+library(ggbreak)
+
+pp_gg_box_plot_multi <- function(data, name){
+  
+  data <- data[,-1]
+  # Transform data to long format
+  data_long <- tidyr::pivot_longer(data, -group, names_to="Variable", values_to="Value")
+  
+  # Calculate upper limit for normal scale before break
+  upper_limit <- quantile(data_long$Value, 0.95)
+  
+  # Create the plot
+  p <- ggplot(data_long, aes(x=group, y=Value)) + 
+    geom_boxplot(aes(group=group, fill=factor(group)), outlier.shape = NA, color="black") +  # Set the boxes to neutral color and outline them in black
+    geom_point(aes(color=factor(group)), position = position_jitter(width = 0.3), alpha=0.7) +  # Keep the points colored
+    facet_wrap(~Variable, scales="free_y") + 
+    coord_trans(y="log10") +  # Implement log transform
+    theme_bw() + 
+    scale_fill_manual(values = c("white", "white"), guide=FALSE) +  # Use white color for box fill and disable its legend
+    scale_color_manual(values = c("#E57373", "#4DB6AC"), 
+                       labels = c("Healthy Controls", "XFG Patients"),
+                       name = "") +  # Return to the preferred colors
+    theme(strip.background = element_blank(),
+          strip.text = element_text(size=12, face="bold"),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.ticks.x = element_blank(),
+          axis.text.x = element_blank(),
+          legend.position = c(0.9, 0.1),
+          legend.justification = c(1, 0),
+          legend.background = element_blank(),
+          legend.key = element_blank())
+  
+  # Save the plot to a file
+  ggsave(filename = paste0(name, ".png"), plot = p, width = 10, height = 6)
+}
+
+
+
 pp_heatmap <- function(df, subset = "full", show_row_names = TRUE, show_col_names = TRUE){
   # Apply the appropriate subset function based on the 'subset' parameter
   if(subset == "limma"){
