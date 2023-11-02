@@ -1,6 +1,6 @@
-archive/
-plots/
-sample_data/
-stats/
-to_do/
 .vscode/
+.archive/
+plots/
+reports/
+to_do/
+data/
