@@ -138,7 +138,7 @@ set_colname_adapter <- function (dflist, antigens = I00_Antigens, mode=1, contro
 stage_1 <- function(dflist, name){
   T01 = handle_background(dflist)
   T02 = lapply(T01,emptyadjust)
-  T03 = lapply(T02,compress_duplicates, layout="sample_data/layout.xlsx")
+  T03 = lapply(T02,compress_duplicates, layout="data/layout.xlsx")
   T04 = set_colname_adapter(T03)
   assign(name, T04, envir = .GlobalEnv)
 }

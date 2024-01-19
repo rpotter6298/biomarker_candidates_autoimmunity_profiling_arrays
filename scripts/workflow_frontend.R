@@ -27,6 +27,8 @@ roc_breakdown <- roc_curve(P03_Transformed$Set_3, report = reports_P03_Transform
 roc_breakdown$roc
 roc_breakdown$validation$accuracy
 roc_breakdown$validation
+
+
 # Heatmap
 lim <- limma_subset(P03_Transformed$Set_3, mode = "raw")
 names <- replace_antigen_names(colnames(lim[-1:-2]))
@@ -34,6 +36,9 @@ colnames(lim)[-1:-2] <- unname(names)
 pp_heatmap(lim)
 # Boxplots
 pp_box_plot_multi(lim, "Boxplots")
+
+#PCA
+pca_plot(P03_Transformed$Set_3)
 
 # GSEA
 sig_adj <- reports_P03_Transformed_bcrsn$Set_3_limma %>%
@@ -45,7 +50,8 @@ C2 <- msigdb_workflow(sig_adj, category = "C2")
 C2 <- msigdb_workflow(sig_raw, category = "C2")
 C3 <- msigdb_workflow(sig_adj, category = "C3")
 C3 <- msigdb_workflow(sig_raw, category = "C3")
-
+C2$plot
+C3$plot
 
 # OTHER
 #pp_box_plot_multi(limma_subset(P03_Transformed$Set_3), "Limma_Subset")

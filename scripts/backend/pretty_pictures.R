@@ -30,11 +30,13 @@ pca_plot <- function(data, show_ellipse = TRUE) {
   plot <- ggplot(pca_scores, aes(x = PC1, y = PC2, color = group)) +
     geom_point() +
     theme_classic() +
-    labs(x = x_label, y = y_label, title = "PCA Plot")
+    labs(x = x_label, y = y_label, title = "PCA Plot") + 
+    scale_color_manual(values = c("Healthy" = "blue", "Diseased"="red"))
   
   if (show_ellipse) {
     plot <- plot + stat_ellipse(aes(fill = group), geom = "polygon", level = 0.95, alpha = 0.2) +
-      labs(title = "PCA Plot with 95% Confidence Ellipses")
+      labs(title = "") + 
+      scale_fill_manual(values = c("Healthy" = "palegreen", "Diseased"="palegoldenrod"))
   }
   
   return(plot)
@@ -130,7 +132,16 @@ pp_heatmap <- function(df, subset = "full", show_row_names = TRUE, show_col_name
   # Transpose the 'subset' dataframe
   subset = t(subset)
   
-  pheatmap(subset, scale = "none", cluster_rows = FALSE, cluster_cols = TRUE, show_rownames = show_row_names, show_colnames = show_col_names)
+  pheatmap(subset, 
+           scale = "none", 
+           cluster_rows = TRUE, 
+           cluster_cols = TRUE, 
+           show_rownames = show_row_names, 
+           show_colnames = show_col_names, 
+           treeheight_row = 0,
+           clustering_distance_cols = "euclidean", 
+           clustering_distance_rows = "euclidean",
+           clustering_method = "complete")
 }
 
 pp_multipca <- function(df, name){

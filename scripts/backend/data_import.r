@@ -25,7 +25,7 @@ load_dependencies <- function(pkg_list) {
 # If any files are found to be missing an Antigen List, the function returns a list of these files, otherwise it returns TRUE.
   dataset_file_integrity_check <- function(keyword) {
     # Get the list of files in the "sample_data" subdirectory
-    file_list <- list.files("sample_data", pattern = "\\.xlsx", full.names = TRUE)
+    file_list <- list.files("data", pattern = "\\.xlsx", full.names = TRUE)
     
     # Filter the file list to include only files containing the specified keyword
     keyword_files <- grep(keyword, file_list, value = TRUE, ignore.case = TRUE)
@@ -96,7 +96,7 @@ load_dependencies <- function(pkg_list) {
                  "BiocManager::clusterProfiler")
     load_dependencies(pkg_list)
     # set path to sample data directory
-    sample_data=paste(getwd(),"/sample_data/", sep="")
+    sample_data=paste(getwd(),"/data/", sep="")
     # get names of all files with .xlsx extension in sample_data directory
     names = list.files(path=sample_data, pattern = ".xlsx", recursive=TRUE)
     
